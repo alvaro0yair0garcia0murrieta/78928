@@ -40,19 +40,6 @@ conectarse();
     }
   });
 
-  server.on("/temperatura", HTTP_GET,[](AsyncWebServerRequest *r){
-    float centigrados = dht.getTemperature();
-    float farenheit = dht.toFahrenheit(centigrados);
-    String html = "<h1>Centigrados: " + String(centigrados) + "</h1> <h1>Farenheit: " + String(farenheit) + "</h1>";
-    r->send(200, "text/html", html);
-  });
-
-  server.on("/humedad", HTTP_GET,[](AsyncWebServerRequest *r){
-    float humedad =  dht.getHumidity();
-    String html = "<h1>Humedad: " + String(humedad) + "</h1>";
-    r->send(200, "text/html", html);
-  });
-
   server.on("/full", HTTP_GET,[](AsyncWebServerRequest *r){
     Serial.print("request recibido");
     AsyncResponseStream *response = r->beginResponseStream("application/json");    
@@ -69,20 +56,6 @@ conectarse();
     json["heat_indexF"] = String(heatIndexF);
     serializeJson(json, *response);
     r->send(response);
-  });
-
-  server.on("/fullauto", HTTP_GET,[](AsyncWebServerRequest *r){
-    float humedad =  dht.getHumidity();
-    float centigrados = dht.getTemperature();
-    float farenheit = dht.toFahrenheit(centigrados);
-    float heatIndexC = dht.computeHeatIndex(centigrados, humedad, false);
-    float heatIndexF = dht.computeHeatIndex(farenheit, humedad, true);
-    String head = "<head><meta http-equiv=\"refresh\" content=\"5\"></head>";
-    String humidity =  "<h1>Humedad: " + String(humedad) + "</h1>";
-    String temp = "<h1>Centigrados: " + String(centigrados) + "</h1> <h1>Farenheit: " + String(farenheit) + "</h1>";
-    String heatIndex = "<h1>HICentigrados: " + String(heatIndexC) + "</h1> <h1>HIFarenheit: " + String(heatIndexF) + "</h1>";
-    String html = head + humidity + temp + heatIndex;
-    r->send(200, "text/html", html);
   });
 
   DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
